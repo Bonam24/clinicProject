@@ -1,0 +1,30 @@
+{
+  "bonamjr24@gmail.com": {
+    "firstname": "Bonam",
+    "lastname": "JR",
+    "email": "bonamjr24@gmail.com",
+    "usertype": "Doctor",
+    "password": "663769"
+  },
+  "hr@gmail.com": {
+    "firstname": "gh",
+    "lastname": "hgh",
+    "email": "hr@gmail.com",
+    "usertype": "Receptionist",
+    "password": "w"
+  },
+  "chitundu.a.l@gmail.com": {
+    "firstname": "Chitundu",
+    "lastname": "Limbikani",
+    "email": "chitundu.a.l@gmail.com",
+    "usertype": "Doctor",
+    "password": "12345@win"
+  },
+  "newton@gmail.com": {
+    "firstname": "Newton",
+    "lastname": "Newton",
+    "email": "newton@gmail.com",
+    "usertype": "Receptionist",
+    "password": "666333"
+  }
+}

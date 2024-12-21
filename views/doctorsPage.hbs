@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Dashboard</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    {{!-- customized style for the dashboard --}}
+    <link rel="stylesheet" href="/customizedfordoctor.css">
+</head>
+
+<body>
+    <!-- Header Bar -->
+    <nav class="navbar navbar-dark" style="background-color: #0b5ed7;">
+        <!-- Primary Blue -->
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold" href="#">B-CLINIC</a>
+            <div style="float: right;">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href='/logout'>Logout</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Patient Queue for small devices -->
+    <div class="d-block d-md-none" style="height:150px;">
+        <div class="sidebar patient-queue-container">
+            <h4 class="text-center">Patient Queue</h4>
+            <div class="list-group patient-queue patient-queue-scroll">
+                <table class="table table-hover">
+                    <thead>
+                        <th>name</th>
+                        <th>Gender</th>
+                    </thead>
+                    <tbody>
+                        {{#each patientsInQueue}}
+                            <tr>
+                                <td>{{this.pfirstname}}</td>
+                                <td>{{this.pgender}}</td>
+                                <td>
+                                    <form action="/removeFromQueue" method="post">
+                                        <input type="hidden" name="id" value="{{this.pemail}}{{this.pdob}}">
+                                        <button class="btn btn-primary">admit</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {{/each}}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Left Sidebar: Patient Queue for medium and above devices -->
+    <div class="sidebar sidebar-fixed d-none d-md-block">
+        <h4 class="text-center mt-3">Patient Queue</h4>
+        <div class="list-group patient-queue all-patients-scroll">
+            <table class="table table-hover">
+                <thead>
+                    <th>name</th>
+                    <th>Gender</th>
+                </thead>
+                <tbody>
+                    {{#each patientsInQueue}}
+                        <tr>
+                            <td>{{this.pfirstname}}</td>
+                            <td>{{this.pgender}}</td>
+                            <td>
+                                <form action="/removeFromQueue" method="post">
+                                    <input type="hidden" name="id" value="{{this.pemail}}{{this.pdob}}">
+                                    <button class="btn-sm btn-primary">admit</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+        <!-- Tabs Navigation -->
+        <ul class="nav nav-tabs" id="dashboardTabs" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" id="appointments-tab" data-toggle="tab" href="#appointments" role="tab"
+                    aria-controls="appointments" aria-selected="true">Patients attended to</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="diagnosis-tab" data-toggle="tab" href="#diagnosis" role="tab"
+                    aria-controls="diagnosis" aria-selected="false">Diagnosis and Prescription</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="view-all-patients-tab" data-toggle="tab" href="#view-all-patients" role="tab"
+                    aria-controls="view-all-patients" aria-selected="false">View All Patients</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="patient-history-tab" data-toggle="tab" href="#patient-history" role="tab"
+                    aria-controls="patient-history" aria-selected="false">Patient History</a>
+            </li>
+        </ul>
+
+        <!-- Tab Content -->
+        <div class="tab-content">
+            <!-- Appointments Tab -->
+            <div class="tab-pane fade show active" id="appointments" role="tabpanel" aria-labelledby="appointments-tab">
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h4>Attended Patients</h4>
+                    </div>
+                    <div class="card-body all-patients-scroll">
+                        <table class="table table-hover">
+                            <thead>
+                                <th>Patient name</th>
+                                <th>Gender</th>
+                            </thead>
+                            <tbody>
+                                {{#each patientsNotInQueue}}
+                                    <tr>
+                                        <td>{{this.pfirstname}}</td>
+                                        <td>{{this.pgender}}</td>
+                                        <td>
+                                            <form action="/putbackinattendance" method="post">
+                                                <input type="hidden" name="id" value="{{this.pemail}}{{this.pdob}}">
+                                                <button class="btn btn-primary">edit</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                {{/each}}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Diagnosis & Prescription Tab -->
+            <div class="tab-pane fade" id="diagnosis" role="tabpanel" aria-labelledby="diagnosis-tab">
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h4>Diagnosis and Prescription</h4>
+                    </div>
+                    <div class="card-body">
+                        <form action="/editDiagnosis" method="post">
+                            {{#each patientInattendance}}
+                            <div class="form-group">
+                                <input type="hidden" name="id" value="{{this.pemail}}{{this.pdob}}">
+                                <label for="patient-name">Patient Name: {{this.pfirstname}} {{this.plastname}}</label><br><br>
+                                <label for="diagnosis-text">Diagnosis</label>
+                                <textarea class="form-control" id="diagnosis-text" rows="3"
+                                    placeholder="Enter diagnosis here" name="diagnosis">{{this.diagnosis}}</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="prescription-text">Prescription</label>
+                                <textarea class="form-control" id="prescription-text" rows="3"
+                                    placeholder="Enter prescription here" name="prescription">{{this.prescription}}</textarea>
+                            </div>
+                            {{/each}}
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- View All Patients Tab -->
+            <div class="tab-pane fade" id="view-all-patients" role="tabpanel" aria-labelledby="view-all-patients-tab">
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h4>All Patients</h4>
+                    </div>
+                    <div class="container mt-0 mb-0 mx-0 py-3">
+                    <form action="/filterPatientsDoctor" method="post" class="d-flex align-items-center">
+                        <input type="text" class="form-control me-2 border"
+                            placeholder="Search for patients" name="search" aria-label="Search" style="max-width: 300px;">
+                        <button class="btn btn-primary me-3" type="submit">Search</button>
+                    </form>
+                    <button class="btn-sm btn-primary pt-2">
+                        <a class="text-white text-decoration-none" href="/doctors">Display all</a>
+                    </button>
+                    </div>
+
+                    <div class="card-body all-patients-scroll">
+                        <table class="table table-hover">
+                            <thead>
+                                <th>name</th>
+                                <th>Gender</th>
+                            </thead>
+                            <tbody>
+                                {{#each patientdata}}
+                                    <tr>
+                                        <td>{{this.pfirstname}}</td>
+                                        <td>{{this.pgender}}</td>
+                                        <td>
+                                            <form action="/putbackinattendance" method="post">
+                                                <input type="hidden" name="id" value="{{this.pemail}}{{this.pdob}}">
+                                                <input type="hidden" value="{{this.diagnosis}}" name="diagnosis">
+                                                <input type="hidden" value="{{this.prescription}}" name="prescription">
+                                                <button class="btn btn-primary">Edit</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                {{/each}}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+<!-- Patient History Tab -->
+<div class="tab-pane fade" id="patient-history" role="tabpanel" aria-labelledby="patient-history-tab">
+    <div class="card mt-3">
+        <div class="card-header">
+            <h4>Patient History</h4>
+        </div>
+        <div class="row card-body">
+            <!-- First Table -->
+            <div class="col-md-6 mb-4 all-patients-history-scroll"> <!-- Add mb-4 for spacing -->
+                <table class="table table-hover">
+                    <thead>
+                        <th>Patient Name</th>
+                        <th>Date of Visit</th>
+                        <th>View history</th>
+                    </thead>
+                    <tbody>
+                        {{#each patientdata}}
+                            <tr>
+                                <td>{{this.pfirstname}} {{this.plastname}}</td>
+                                <td>{{this.pdob}}</td>
+                                <td>
+                                    <form action="/selectedrecord" method="post">
+                                        <input type="hidden" name="id" value="{{this.pemail}}{{this.pdob}}"> 
+                                        <button class="btn-sm btn-primary">View history</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {{/each}}
+                    </tbody>
+                </table>
+            </div>
+            <!-- Second Table -->
+            <div class="col-md-6 all-patients-history-scroll">
+                <h4>Individual record</h4>
+                <table class="table table-hover">
+                    <thead>
+                        <th>Name</th>
+                        <th>Date</th>
+                        <th>Diagnosis</th>
+                        <th>Prescription</th>
+                    </thead>
+                    <tbody>
+                        {{#each patientInFocus}}
+                            <tr>
+                                <td>{{this.pfirstname}}</td>
+                                <td>{{this.pdob}}</td>
+                                <td>{{this.diagnosis}}</td>
+                                <td>{{this.prescription}}</td>
+                            </tr>
+                        {{/each}}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="d-block text-white text-center text-lg-start"
+        style="background-color: #0b5ed7; position: fixed; bottom: 0; width: 100%; z-index: 1030;">
+        <div class="container p-2">
+            <p class="text-center mb-0">&copy; 2024 B-CLINIC. All Rights Reserved.</p>
+            <p class="text-center mb-0">
+                <a href="/privacy" class="text-white text-decoration-none">Privacy Policy</a> |
+                <a href="/terms" class="text-white text-decoration-none">Terms of Service</a>
+            </p>
+        </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="/handleEditButton.js"></script>
+    <script src="/showdiagnosis.js"></script>
+</body>
+
+</html>
